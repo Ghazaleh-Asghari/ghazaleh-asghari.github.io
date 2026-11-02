@@ -757,3 +757,73 @@ footer .wrap {
 .hero .wrap>* {
   min-width:0;
 }
+
+/* Project additions reuse the portfolio's type, colour and spacing system. */
+.project-card { max-width:850px; border-top:2px solid var(--accent); padding-top:24px; }
+.project-card h3 { font-size:30px; }
+.project-card h3 a { color:var(--ink); text-decoration:none; }
+.project-card p { max-width:49em; }
+.project-result { margin-top:24px; font-size:14px; color:var(--muted); }
+.project-hero { padding:48px 0; border-bottom:1px solid var(--rule); }
+.back-link { display:inline-block; margin-bottom:28px; font-size:14px; }
+.project-hero h1 { font-size:clamp(40px,6vw,68px); line-height:1.08; letter-spacing:-.035em; margin:0 0 22px; max-width:15em; }
+.project-deck { font:clamp(21px,2.7vw,28px)/1.45 var(--serif); max-width:30em; }
+.project-facts { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin:30px 0 20px; max-width:850px; }
+.project-facts dt { font:11px/1.6 var(--mono); text-transform:uppercase; color:var(--muted); }
+.project-facts dd { margin:6px 0 0; font:19px/1.4 var(--serif); }
+.project-caveat { font-size:13px; color:var(--muted); max-width:65em; margin-bottom:0; }
+.project-layout { display:grid; grid-template-columns:195px minmax(0,1fr); gap:55px; align-items:start; padding-top:52px; padding-bottom:65px; }
+.project-contents { position:sticky; top:110px; font-size:13px; }
+.project-contents ol { padding-left:19px; }
+.project-contents li { margin-bottom:10px; }
+.project-contents a { text-decoration:none; }
+.project-prose { max-width:750px; min-width:0; }
+.project-prose section { padding-bottom:36px; margin-bottom:36px; border-bottom:1px solid var(--rule); scroll-margin-top:110px; }
+.project-prose .num { margin-bottom:14px; }
+.project-prose h2 { font-size:clamp(28px,3.4vw,38px); }
+.project-prose h3 { margin-top:30px; font-size:25px; }
+.project-prose p { font-size:16px; }
+.project-prose code { font:12px/1.6 var(--mono); overflow-wrap:anywhere; }
+.decision-flow { margin:28px 0 0; }
+.decision-flow ol { list-style:none; padding:0; margin:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; }
+.decision-flow li { border-top:2px solid var(--accent); background:var(--accent-soft); padding:12px 10px; }
+.decision-flow strong { display:block; font:16px/1.3 var(--serif); }
+.decision-flow span { display:block; font-size:11px; line-height:1.55; margin-top:10px; }
+.decision-flow figcaption { font-size:12px; color:var(--muted); margin-top:12px; }
+.table-scroll { overflow-x:auto; margin:26px 0; }
+.table-scroll:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+.evidence-table { width:100%; min-width:530px; border-collapse:collapse; font-size:13px; line-height:1.65; }
+.evidence-table caption { text-align:left; font-size:12px; color:var(--muted); padding-bottom:12px; }
+.evidence-table th,.evidence-table td { text-align:left; vertical-align:top; border-bottom:1px solid var(--rule); padding:12px 10px; }
+.evidence-table thead { background:var(--accent-soft); }
+.evidence-table tbody th { font-weight:500; width:23%; }
+.project-prose .evidence-notes p { color:var(--muted); font-size:13px; }
+.project-bottom { margin-top:24px; }
+@media(max-width:1100px) and (min-width:761px) {
+  .site-header .wrap { gap:12px; }
+  .nav { gap:11px; font-size:12px; }
+  .brand { font-size:20px; }
+}
+@media(max-width:850px) {
+  .project-layout { grid-template-columns:1fr; gap:25px; }
+  .project-contents { position:static; border-bottom:1px solid var(--rule); padding-bottom:18px; }
+  .project-contents ol { display:flex; flex-wrap:wrap; gap:8px 24px; list-style:none; padding:0; margin:0; }
+  .project-contents li { margin:0; }
+}
+@media(max-width:600px) {
+  .project-hero { padding:30px 0; }
+  .project-facts { grid-template-columns:1fr; gap:15px; }
+  .project-facts dd { margin-top:2px; }
+  .decision-flow ol { grid-template-columns:1fr; }
+  .decision-flow li { display:grid; grid-template-columns:80px 1fr; gap:15px; }
+  .decision-flow span { margin:0; font-size:13px; }
+  .project-prose section { scroll-margin-top:145px; }
+}
+@media print {
+  .project-contents,.back-link,.project-bottom { display:none; }
+  .project-layout { display:block; padding-top:20px; }
+  .project-prose { max-width:none; }
+  .project-prose section { margin-bottom:20px; padding-bottom:20px; }
+  .project-hero { padding:20px 0; }
+  .project-hero h1 { font-size:32pt; }
+}
