@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <title>Dice Market-Making Agent | Ghazaleh Asghari</title>
-  <meta name="description" content="A technical account of Bayesian inference, Monte Carlo quote selection, strategic signalling and empirical evaluation in a competitive dice market-making challenge.">
+  <meta name="description" content="A brief overview of a two-person market-making project, my contribution and final challenge standing.">
   <meta property="og:title" content="Dice Market-Making Agent | Ghazaleh Asghari">
-  <meta property="og:description" content="Hidden-state inference, inventory-aware decisions and experimental evaluation under a 50 ms decision limit.">
-  <meta property="og:type" content="article">
+  <meta property="og:description" content="An adaptive Bayesian market-making project with opponent modelling and Monte Carlo quote selection.">
+  <meta property="og:type" content="website">
   <meta name="theme-color" content="#fbfaf7">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/style.css">
@@ -27,75 +27,16 @@
     <a class="back-link" href="index.html#projects">← All projects</a>
     <p class="eyebrow">Quantitative &amp; computational research · October 2026</p>
     <h1>Dice Market-Making Agent</h1>
-    <p class="project-deck">Inferring hidden information, choosing quotes and measuring strategic behaviour in a competitive market-making game.</p>
-    <div class="tags"><span>Python / NumPy</span><span>Bayesian inference</span><span>Online regression</span><span>Monte Carlo</span><span>Experimental design</span></div>
-    <dl class="project-facts"><div><dt>Challenge</dt><dd>Everesteer · October 2026</dd></div><div><dt>Final result</dt><dd>27th · Elo 1379</dd></div><div><dt>Decision limit</dt><dd>50 ms per quote</dd></div></dl>
-    <p class="project-caveat">All performance figures concern a simulated, zero-sum dice game. Game points are not financial-market returns.</p>
+    <p class="project-deck">Everesteer Trading Challenge · Python / NumPy · Two-person project</p>
+    <div class="project-prose">
+      <p>Developed the Bayesian inference and simulation core, built the evaluation framework, integrated components and made deployment decisions for an adaptive market-making agent. The approach combined opponent modelling with Monte Carlo quote selection in a simulated dice market.</p>
+      <p><strong>Final challenge standing: 27th, Elo 1379.</strong></p>
+      <p>A detailed technical write-up is being held pending clarification of the organisers’ publication conditions.</p>
+    </div>
+    <p class="project-caveat">This project concerns a simulated dice game. Challenge performance does not represent financial-market returns.</p>
+    <div class="actions project-bottom"><a class="btn" href="cv/Ghazaleh-Asghari-CV-Quantitative.pdf">Download CV</a><a class="btn ghost" href="index.html#projects">Back to projects</a></div>
   </div></section>
-  <div class="wrap project-layout">
-    <nav class="project-contents" aria-label="On this page"><p class="k">On this page</p><ol>
-      <li><a href="#problem">The problem</a></li><li><a href="#contribution">My contribution</a></li><li><a href="#inference">Hidden-state inference</a></li><li><a href="#decisions">Quote selection</a></li><li><a href="#signalling">Strategic signalling</a></li><li><a href="#evaluation">Evaluation</a></li><li><a href="#results">Results &amp; lessons</a></li><li><a href="#provenance">Evidence notes</a></li>
-    </ol></nav>
-    <article class="project-prose">
-      <section id="problem"><p class="num">01 — The problem</p><h2>A small market with hidden information</h2>
-        <p>The challenge was a five-player, zero-sum market on the sum of 12 dice. Each player saw two dice and posted a one-unit bid and ask in four sequential steps per round, with a maximum spread of four. Quotes conveyed information as well as offering trades: observing an opponent’s bid and ask could change the estimated settlement value.</p>
-        <p>This made the task more demanding than predicting a total. The agent had to infer what others knew, anticipate which orders would execute and account for the information revealed by an execution. It also had to choose how much to reveal through its own opening quote. Every decision had a 50 ms limit.</p>
-      </section>
-      <section id="contribution"><p class="num">02 — My contribution</p><h2>From inference to executable decisions</h2>
-        <p>I developed the Bayesian inference and simulation core, built the evaluation framework, integrated the agent’s components and made deployment decisions. The work connected explicit probabilistic models to quote selection and then tested those decisions against recorded challenge states.</p>
-        <p>The final system combined opponent-specific statistical models, a neural likelihood, exact order matching and replay-fitted execution corrections. My integration work included combining the neural likelihood with the Bayesian estimates and assessing how changes affected decisions. Development used AI coding assistants permitted by the challenge rules.</p>
-        <figure class="decision-flow"><ol><li><strong>Observe</strong><span>Own dice and the quote history</span></li><li><strong>Infer</strong><span>Posteriors over hidden dice totals</span></li><li><strong>Simulate</strong><span>Possible deals, orders and fills</span></li><li><strong>Choose</strong><span>Quote scored for payoff and inventory</span></li><li><strong>Update</strong><span>Refit after dice are revealed</span></li></ol><figcaption>The agent’s inference-to-decision loop. Evaluation separately tests the quotes this loop produces.</figcaption></figure>
-      </section>
-      <section id="inference"><p class="num">03 — Hidden-state inference</p><h2>Learning what opponents’ quotes reveal</h2>
-        <p>Each opponent’s unseen pair of dice has 11 possible totals. The agent maintained a discrete posterior over these totals, updating it as quotes arrived. Crucially, quote models were conditioned on the information the opponent had already observed: a quote should not be interpreted as an independent signal about private dice when it also reflects earlier public quotes.</p>
-        <p>The statistical components included a smoothed empirical decoder for opening quotes, likelihoods that allowed for outliers, and per-opponent, per-step recursive least squares with forgetting and change detection. Models were refitted after each round, once the dice were revealed. Forgetting allowed recent behaviour to receive more weight as opponents changed strategy.</p>
-        <p>The final agent used log-linear pooling to combine these likelihoods with a neural quote model trained on approximately 6.1 million decisions from 101,000 replayed matches. The neural model used a shared encoder over rivals, mean/max pooling and a 516-class output. Integrating this model supplied another source of evidence about hidden information.</p>
-        <p>These components should be distinguished from independently demonstrated improvements. For example, change detection remained in the final agent, but its individual contribution was not isolated. The evaluation findings for neural pooling are discussed below.</p>
-      </section>
-      <section id="decisions"><p class="num">04 — Quote selection</p><h2>Valuing a trade in the state where it fills</h2>
-        <p>For each decision, the agent drew 32 stratified samples from the hidden-state posteriors. In each sampled deal it simulated opponents’ orders and applied the exact order-matching rules. Candidate quotes were therefore evaluated through their possible executions, rather than solely through distance from a forecast midpoint.</p>
-        <p>A trade was valued at the settlement value of the particular simulated deal in which it filled. This captures adverse selection: the states in which an opponent accepts a quote need not resemble an unconditional draw from the value distribution. An apparently attractive price can be poor precisely because it executes when the counterparty has favourable information.</p>
-        <p>The decision score also accounted for a resting quote being picked off at the next step and penalised inventory quadratically, using a coefficient of 0.08 on squared inventory. Regression corrections fitted on replays adjusted the scores at steps two and three.</p>
-        <p>The opening combined randomised signalling with a centred quote for dice totals six to eight. An adaptive opening-size component scored 44 options using counterfactual replay and shrank its estimates towards a prior. Runtime work included warm-up and using NumPy’s <code>einsum</code> in place of matrix multiplication to meet the decision budget.</p>
-      </section>
-      <section id="signalling"><p class="num">05 — Strategic signalling</p><h2>Paying early to change later beliefs</h2>
-        <p>The opening quote could reveal private dice. A quote on the “honest” side of the market tended to signal whether the player’s pair sum was above or below seven. A randomised bluff instead sometimes opened on the opposite side, with probabilities depending on the actual pair sum. Extreme sums usually signalled honestly; middle sums allowed more randomisation. In the final agent, totals six to eight used the centred 40.5/43.5 opening.</p>
-        <p>The mechanism involved a trade-off across the round. A bluff could lose game points at the opening by trading on the wrong side. If opponents subsequently inferred the wrong private dice, later quotes could recover that loss by trading against their mispricing. The relevant outcome was therefore whole-round payoff, rather than opening-step payoff alone.</p>
-        <h3>A randomised natural experiment</h3>
-        <p>Because the opening side was randomised conditional on the agent’s dice, bluff and honest rounds with the same dice total could be compared. In the v6.8 challenge window, the estimated whole-round advantage was <strong>+1.32 game points per round</strong> (95% confidence interval +1.13 to +1.54), across 370 matches with 3,642 bluff rounds.</p>
-        <p>A separate v6.13 window replicated the result: <strong>+1.07 points</strong> (95% confidence interval +0.74 to +1.41), across 121 matches with 1,278 bluff rounds. A later analysis restricted to pair sums five and nine estimated +1.90 points per hand (interval +1.53 to +2.25; 349 matches). That restricted result is not an overall average; the report records the start of that window but not its end.</p>
-        <h3>How the opening compared with strong opponents</h3>
-        <p>A descriptive study examined the agents in the top 20 of the 23:56 UTC leaderboard snapshot, using matches from 31 October, 12:00 UTC to closing. For pair sums four to six or eight to ten, 15 of those agents opened on the honest side in more than 97% of hands; 14 did so in more than 99%. Two agents frequently used an uninformative 40/44 opening. Three bluffed at rates of approximately 13–15%.</p>
-        <p>The agent’s opposed-opening rate was 14.7% in the corresponding measure. This is a comparison of opening-quote sides over one time window, not a classification of each rival’s complete strategy or a claim that bluffing was unique.</p>
-        <h3>Adaptation and limits</h3>
-        <p>The advantage was not stationary. In a later v6.14 window with heavier bluffing, the estimated gain fell to +0.43 points per round. Rival responses also changed: an earlier analysis estimated a step-one midpoint response of about 2.07 per unit of the agent’s signal, compared with a model-implied rational response of about 1.82; the observed response later fell to roughly 1.7.</p>
-        <p>These findings made signalling an empirical modelling question. They did not establish a universally superior opening policy. Different opponent pools, information responses and bluff frequencies could change its value.</p>
-      </section>
-      <section id="evaluation"><p class="num">06 — Evaluation</p><h2>Testing decisions, not just predictions</h2>
-        <p>Candidate versions were evaluated by replaying their quotes on recorded challenge states with the original random seeds. Selection and confirmation halves, blind time windows and bootstrap confidence intervals over whole matches reduced dependence on a single favourable slice of data. Resampling matches also respected the grouping of observations within a match.</p>
-        <p>Replay estimates answer a narrower question than fresh competition: how would a different decision behave at the recorded states? They do not fully reproduce how opponents might react to a changed policy throughout a match. Challenge observations therefore remained a separate check.</p>
-        <div class="table-scroll" role="region" aria-label="Replay and challenge evaluation results" tabindex="0"><table class="evidence-table"><caption>Selected component evaluations · gains are simulated-game points per round</caption><thead><tr><th scope="col">Change</th><th scope="col">Replay / held-out evidence</th><th scope="col">Live challenge evidence</th></tr></thead><tbody>
-          <tr><th scope="row">Neural likelihood pooling</th><td>+0.148 [0.126, 0.169] in replayed decisions, steps 1–3; 411-match blind window</td><td>−0.05 [−0.22, +0.10]; no detectable difference</td></tr>
-          <tr><th scope="row">Step-two cost refit</th><td>+0.144 [0.123, 0.166]; report notes 158 matches in the log versus 136 in the raw grid file</td><td>+0.08 [−0.07, +0.22]; not statistically significant</td></tr>
-          <tr><th scope="row">Adaptive opening size</th><td>+0.254 [0.219, 0.286] on a 411-match blind window</td><td>No separate live effect reported</td></tr>
-        </tbody></table></div>
-      </section>
-      <section id="results"><p class="num">07 — Results &amp; lessons</p><h2>What the experiments established</h2>
-        <p>The final challenge result was <strong>27th with Elo 1379</strong>. An earlier captured snapshot showed a peak position of 12th among 102 candidates. The final placing and the earlier peak describe different moments in the competition.</p>
-        <p>The most useful lesson was the gap between forecasting and decision quality. One line of changes reduced forecast MSE from 10.25 to 9.37 but lost approximately 0.04 to 0.14 game points per round in replayed decisions. Better beliefs were useful only when the execution model converted them into better choices.</p>
-        <p>Local starter-agent simulations were also an unreliable guide to leaderboard strength. Their opponents differed from the competitive field, and favourable local results did not consistently transfer. This motivated greater reliance on recorded challenge states and separate confirmation windows.</p>
-        <p>Some implemented ideas remained unproven or were replaced. Change detection had no isolated benefit estimate. An earlier information-theoretic opening used Blahut–Arimoto iteration to balance expected payoff and mutual information, but was not shown to improve results and was replaced. Optimal-transport calibration and polynomial probability densities were considered but never implemented.</p>
-        <p>The project’s broader value was in connecting mathematical inference, strategic decisions and empirical scrutiny under a practical runtime constraint. It offered a setting in which assumptions could be made explicit, tested and revised when competitive behaviour differed from simulation.</p>
-      </section>
-      <section id="provenance" class="evidence-notes"><p class="num">08 — Evidence notes</p><h2>Scope and provenance</h2>
-        <p>“Live” refers throughout to games played on the challenge leaderboard, not to financial markets. Final ranking and Elo are reported separately from the earlier recorded snapshots. Confidence intervals and sample sizes refer to the specific evaluation windows described above.</p>
-        <p>The opponent-opening comparison comes from the saved analysis script <code>top20_bluff_rates.py</code> and output <code>top20_bluff_rates_31oct1200.txt</code>, archived under <code>dice_market/evaluation/ladder_bluff_20261031/</code>. These are internal evidence references, not public download links. The observation window and restricted dice totals are stated alongside the comparison.</p>
-        <p>Numerical findings retain their evaluation setting and qualifications. No local-simulation result is presented as a real-market return, and implemented methods are distinguished from methods whose independent benefit was demonstrated.</p>
-      </section>
-      <div class="actions project-bottom"><a class="btn" href="cv/Ghazaleh-Asghari-CV-Quantitative.pdf">Download CV</a><a class="btn ghost" href="index.html#projects">Back to projects</a></div>
-    </article>
-  </div>
 </main>
-<footer><div class="wrap"><span>© 2026 Ghazaleh Asghari</span><a href="#main">Back to top ↑</a><span>Reading, United Kingdom</span></div></footer>
+<footer><div class="wrap"><span>© 2026 Ghazaleh Asghari</span><a href="index.html">Home</a><span>Reading, United Kingdom</span></div></footer>
 </body>
 </html>
